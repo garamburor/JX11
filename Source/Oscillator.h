@@ -25,10 +25,6 @@ public:
     {
         inc = 0.0f;
         phase = 0.0f;
-        sin0 = 0.0f;
-        sin1 = 0.0f;
-        dsin = 0.0f;
-        dc = 0.0f;
     }
 
     float nextSample()
@@ -40,19 +36,14 @@ public:
             // 3
             float halfPeriod = period * 0.5f;
             phaseMax = std::floor(0.5f + halfPeriod) - 0.5f;
-            dc = 0.5f * amplitude / phaseMax; // Approx DC by avg
             phaseMax *= PI;
 
             inc = phaseMax / halfPeriod;
             phase = -phase;
 
             // 4
-            sin0 = amplitude * std::sin(phase);
-            sin1 = amplitude * std::sin(phase - inc);
-            dsin = 2.0f * std::cos(inc);
-
             if (phase * phase > 1e-9) {
-                output = sin0 / phase;
+                output = amplitude * std::sin(phase) / phase;
             }
             else {
                 output = amplitude;
@@ -65,24 +56,13 @@ public:
                 inc = -inc;
             }
             // 7
-            float sinp = dsin * sin0 - sin1;
-            sin1 = sin0;
-            sin0 = sinp;
-            output = sinp / phase;
+            output = amplitude * std::sin(phase);
         }
 
-        return output - dc;
+        return output;
     }
 private:
     float phase;
     float phaseMax;
     float inc;
-
-    // for efficient sine
-    float sin0;
-    float sin1;
-    float dsin;
-
-    // for DC removal
-    float dc;
 };
