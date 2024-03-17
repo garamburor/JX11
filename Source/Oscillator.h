@@ -31,6 +31,6 @@ public:
             phase -= 1.0f;
         }
 
-        return amplitude * std::sin(TWO_PI * phase);
+        return amplitude * (2.0f * phase - 1.0f);
     }
 };
