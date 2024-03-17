@@ -16,15 +16,19 @@ struct Voice
     Oscillator osc;
 
     int note;
+    float saw;
 
     void reset()
     {
         note = 0;
         osc.reset();
+        saw = 0.0f;
     }
 
     float render()
     {
-        return osc.nextSample();
+        float sample = osc.nextSample();
+        saw = saw * 0.997f + sample; // apply one-pole LP filter
+        return saw;
     }
 };
