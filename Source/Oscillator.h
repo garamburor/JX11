@@ -54,6 +54,11 @@ public:
 
     float nextSample()
     {
-        return amplitude * nextBandLimitedSample();
+        phase += inc;
+        if (phase >= 1.0f) {
+            phase -= 1.0f;
+        }
+        float aliased = 2.0f * phase - 1.0f;
+        return amplitude * (aliased -  nextBandLimitedSample());
     }
 };
