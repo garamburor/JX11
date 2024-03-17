@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="D7SyH8" name="JX11" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              pluginFormats="buildStandalone,buildVST3" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              pluginManufacturer="Guillermo Aramburo R" pluginCode="JX11">
+  <MAINGROUP id="zwDQ1R" name="JX11">
+    <GROUP id="{084D884D-BF30-2F00-02A2-D42D35AB5623}" name="Source">
+      <FILE id="V15EHF" name="Utils.h" compile="0" resource="0" file="Source/Utils.h"/>
+      <FILE id="exJATI" name="Oscillator.h" compile="0" resource="0" file="Source/Oscillator.h"/>
+      <FILE id="qAp9ms" name="NoiseGenerator.h" compile="0" resource="0"
+            file="Source/NoiseGenerator.h"/>
+      <FILE id="F8YBfi" name="Voice.h" compile="0" resource="0" file="Source/Voice.h"/>
+      <FILE id="GW4fMk" name="Synth.cpp" compile="1" resource="0" file="Source/Synth.cpp"/>
+      <FILE id="cldN6p" name="Synth.h" compile="0" resource="0" file="Source/Synth.h"/>
+      <FILE id="xKqwuB" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="uUCS1w" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="qfUmhF" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="Dz9YLg" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
+  <EXPORTFORMATS>
+    <VS2022 targetFolder="Builds/VisualStudio2022" extraCompilerFlags="/W4">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="JX11" enablePluginBinaryCopyStep="1"/>
+        <CONFIGURATION isDebug="0" name="Release" targetName="JX11"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="../../modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../modules"/>
+        <MODULEPATH id="juce_core" path="../../modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../modules"/>
+        <MODULEPATH id="juce_events" path="../../modules"/>
+        <MODULEPATH id="juce_graphics" path="../../modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../modules"/>
+      </MODULEPATHS>
+    </VS2022>
+  </EXPORTFORMATS>
+</JUCERPROJECT>
