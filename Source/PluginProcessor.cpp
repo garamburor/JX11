@@ -218,6 +218,14 @@ void JX11AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 }
 
 //==============================================================================
+juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createParameterLayout()
+{
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+
+    return layout;
+}
+
+//==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
