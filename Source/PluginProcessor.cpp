@@ -222,6 +222,26 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
 
+    layout.add(std::make_unique<juce::AudioParameterChoice>(
+        ParameterID::polyMode,
+        "Polyphony",
+        juce::StringArray{ "Mono", "Poly" },
+        1));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::oscTune,
+        "Osc Tune",
+        juce::NormalisableRange<float>(-24.0f, 24.0f, 1.0f),
+        -12.0f,
+        juce::AudioParameterFloatAttributes().withLabel("semi")));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::oscFine,
+        "Osc Fine",
+        juce::NormalisableRange<float>(-50.0f, 50.0f, 0.1f, 0.3f, true),
+        0.0f,
+        juce::AudioParameterFloatAttributes().withLabel("cent")));
+
     return layout;
 }
 
