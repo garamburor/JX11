@@ -244,6 +244,23 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
         0.0f,
         juce::AudioParameterFloatAttributes().withLabel("cent")));
 
+    // func to display mix %
+    auto oscMixStringFromValue = [](float value, int)
+        {
+            char s[16] = { 0 };
+            snprintf(s, 16, "%4.0f:%2.0f", 100.0 - 0.5f * value, 0.5f * value);
+            return juce::String(s);
+        };
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::oscMix,
+        "Osc Mix",
+        juce::NormalisableRange<float>(0.0f, 100.0f),
+        0.0f,
+        juce::AudioParameterFloatAttributes()
+        .withLabel("%")
+        .withStringFromValueFunction(oscMixStringFromValue)));
+
     return layout;
 }
 
