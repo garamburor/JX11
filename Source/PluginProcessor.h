@@ -48,7 +48,8 @@ namespace ParameterID
 //==============================================================================
 /**
 */
-class JX11AudioProcessor  : public juce::AudioProcessor
+class JX11AudioProcessor  : public juce::AudioProcessor,
+    private juce::ValueTree::Listener
 {
 public:
     //==============================================================================
@@ -92,6 +93,11 @@ public:
     juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "Parameters", createParameterLayout() };
 
 private:
+
+    void valueTreePropertyChanged(juce::ValueTree&, const juce::Identifier&) override
+    {
+        DBG("parameter changed");
+    }
 
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
