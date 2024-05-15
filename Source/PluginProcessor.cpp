@@ -8,6 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "Utils.h"
 
 //==============================================================================
 JX11AudioProcessor::JX11AudioProcessor()
@@ -22,7 +23,7 @@ JX11AudioProcessor::JX11AudioProcessor()
                        )
 #endif
 {
-    noiseParam = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(ParameterID::noise.getParamID()));
+    castParameter(apvts, ParameterID::noise, noiseParam);
 }
 
 JX11AudioProcessor::~JX11AudioProcessor()
