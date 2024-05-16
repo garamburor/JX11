@@ -96,8 +96,12 @@ private:
 
     void valueTreePropertyChanged(juce::ValueTree&, const juce::Identifier&) override
     {
-        DBG("parameter changed");
+        parametersChanged.store(true);
     }
+
+    void update(); // Calculations to update parameters
+
+    std::atomic<bool> parametersChanged { false };
 
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
