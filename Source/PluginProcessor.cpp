@@ -124,6 +124,7 @@ void JX11AudioProcessor::changeProgramName (int index, const juce::String& newNa
 void JX11AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     synth.allocateResources(sampleRate, samplesPerBlock);
+    parametersChanged.store(true); // properly init params
     reset();
 }
 
@@ -169,14 +170,15 @@ void JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::M
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // Read the parameters here:
-    float noiseMix = noiseParam->get() / 100.0f;
-    noiseMix *= noiseMix;
-    synth.noiseMix = noiseMix * 0.06f;
-
     // Clear any output channels that don't contain input data
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+
+    // tread safe check to see if parameters changed
+    bool expected = true;
+    if (parametersChanged.compare_exchange_strong(expected, false)) {
+        update();
+    }
 
     splitBufferByEvents(buffer, midiMessages);
 }
@@ -479,6 +481,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
     return layout;
 }
 
+void JX11AudioProcessor::update()
+{
+    // Noise paramChange
+    float noiseMix = noiseParam->get() / 100.0f;
+    noiseMix *= noiseMix;
+    synth.noiseMix = noiseMix * 0.06f;
+}
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
