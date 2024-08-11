@@ -319,6 +319,16 @@ void JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer, j
 
 void JX11AudioProcessor::handleMIDI(uint8_t data0, uint8_t data1, uint8_t data2)
 {
+    // If command is program change
+    if ((data0 & 0xF0) == 0xC0) {
+        // And called preset is within bounds
+        if (data1 < presets.size()) {
+            // Change current preset
+            setCurrentProgram(data1);
+        }
+    }
+
+    // Other commands send to synth object
     synth.midiMessage(data0, data1, data2);
 }
 
