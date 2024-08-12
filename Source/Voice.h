@@ -10,10 +10,12 @@
 
 #pragma once
 #include "Oscillator.h"
+#include "Envelope.h"
 
 struct Voice
 {
     Oscillator osc;
+    Envelope env;
 
     int note;
     float saw;
@@ -29,6 +31,9 @@ struct Voice
     {
         float sample = osc.nextSample();
         saw = saw * 0.997f + sample; // apply one-pole LP filter
-        return saw;
+
+        float envelope = env.nextValue();
+
+        return saw * envelope;
     }
 };
