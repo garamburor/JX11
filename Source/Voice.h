@@ -27,13 +27,16 @@ struct Voice
         saw = 0.0f;
     }
 
-    float render()
+    float render(float input)
     {
         float sample = osc.nextSample();
         saw = saw * 0.997f + sample; // apply one-pole LP filter
 
+        // sum input
+        float output = saw + input;
+
         float envelope = env.nextValue();
 
-        return saw * envelope;
+        return output * envelope;
     }
 };

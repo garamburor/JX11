@@ -46,7 +46,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
         // 3
         float output = 0.0f;
         if (voice.note > 0) {
-            output = voice.render() + noise; // 4
+            output = voice.render(noise); // 4
         }
 
         // 5
