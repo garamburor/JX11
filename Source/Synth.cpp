@@ -36,25 +36,31 @@ void Synth::render(float** outputBuffers, int sampleCount)
 {
     float* outputBufferLeft = outputBuffers[0];
     float* outputBufferRight = outputBuffers[1];
-
-    // 1
+    
     for (int sample = 0; sample < sampleCount; ++sample)
     {
-        // 2
+        // Get noise level for current sample
         float noise = noiseGen.nextValue() * noiseMix;
 
-        // 3
+        // Reset output
         float output = 0.0f;
-        if (voice.note > 0) {
-            output = voice.render(noise); // 4
+        if (voice.env.isActive()) {
+            // Store noise value if loud enough
+            output = voice.render(noise);
         }
 
-        // 5
+        // Set output in audio buffer
         outputBufferLeft[sample] = output;
         if (outputBufferRight != nullptr) {
             outputBufferRight[sample] = output;
         }
     }
+
+    // If voice is silent, reset it's envelope
+    if (!voice.env.isActive()) {
+        voice.env.reset();
+    }
+
     protectYourEars(outputBufferLeft, sampleCount);
     protectYourEars(outputBufferRight, sampleCount);
 }
