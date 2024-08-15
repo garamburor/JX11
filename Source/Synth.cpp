@@ -104,6 +104,6 @@ void Synth::noteOn(int note, int velocity)
 void Synth::noteOff(int note)
 {
     if (voice.note == note) {
-        voice.note = 0;
+        voice.release();
     }
 }

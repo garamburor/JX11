@@ -28,6 +28,11 @@ struct Voice
         env.reset();
     }
 
+    void release()
+    {
+        env.release();
+    }
+
     float render(float input)
     {
         float sample = osc.nextSample();

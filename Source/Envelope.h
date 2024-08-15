@@ -21,6 +21,12 @@ public:
         return level;
     }
 
+    void release()
+    {
+        target = 0.0f;
+        multiplier = releaseMultiplier;
+    }
+
     void reset()
     {
         level = 0.0f;
