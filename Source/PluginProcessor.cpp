@@ -598,11 +598,29 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
 
 void JX11AudioProcessor::update()
 {
-    // Envelope
     float sampleRate = float(getSampleRate());
-    float decayTime = envDecayParam->get() / 100.0f * 5.0f;
-    float decaySamples = sampleRate * decayTime;
-    synth.envDecay = std::exp(std::log(SILENCE) / decaySamples);
+    float inverseSampleRate = 1.0f / sampleRate;
+
+    // Envelope
+    synth.envAttack = std::exp(-inverseSampleRate
+        * std::exp(5.5f - 0.075f *
+            envAttackParam->get()));
+
+    synth.envDecay = std::exp(-inverseSampleRate
+        * std::exp(5.5f - 0.075f *
+            envDecayParam->get()));
+
+    synth.envSustain = envSustainParam->get() / 100.0f;
+
+    float envRelease = envReleaseParam->get();
+    if (envRelease < 1.0f) {
+        synth.envRelease = 0.75f;
+    }
+    else {
+        synth.envRelease = std::exp(-inverseSampleRate
+            * std::exp(5.5f - 0.075f * envRelease));
+    }
+
     // Noise paramChange
     float noiseMix = noiseParam->get() / 100.0f;
     noiseMix *= noiseMix;
