@@ -19,7 +19,30 @@ public:
     float nextValue()
     {
         level = multiplier * (level - target) + target;
+
+        // Switch from attack to decay  & sustain values
+        if (level + target > 3.0f) {
+            multiplier = decayMultiplier;
+            target = sustainLevel;
+        }
+
         return level;
+    }
+    
+    // Return target if it's still in attack phase
+    inline bool isInAttack() const
+    {
+        return target >= 2.0f;
+    }
+
+    void attack()
+    {
+        // Start envelope above threshold so it's not muted
+        level += SILENCE + SILENCE;
+        // Target to end attack phase
+        target = 2.0f;
+        // Set time constant
+        multiplier = attackMultiplier;
     }
 
     void release()
@@ -42,11 +65,14 @@ public:
     }
 
     float level;
-    float multiplier;
-    float target;
 
     float attackMultiplier;
     float decayMultiplier;
     float sustainLevel;
     float releaseMultiplier;
+
+private:
+    float multiplier;
+    float target;
+
 };
