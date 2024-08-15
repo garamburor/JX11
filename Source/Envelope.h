@@ -15,6 +15,7 @@ const float SILENCE = 0.0001f; // mute threshold
 class Envelope
 {
 public:
+
     float nextValue()
     {
         level = multiplier * (level - target) + target;
@@ -25,6 +26,12 @@ public:
     {
         target = 0.0f;
         multiplier = releaseMultiplier;
+    }
+
+    // mute envelope if below SILENCE const
+    inline bool isActive() const
+    {
+        return level > SILENCE;
     }
 
     void reset()
