@@ -32,6 +32,8 @@ public:
     float envSustain;
     float envRelease;
 
+    float oscMix;
+
 private:
     void noteOn(int note, int velocity);
     void noteOff(int note);

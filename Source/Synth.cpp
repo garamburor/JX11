@@ -90,10 +90,16 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
 void Synth::noteOn(int note, int velocity)
 {
     voice.note = note;
+    // convert note to freq (temperament tuning)
     float freq = 440.0f * std::exp2(float(note - 69) / 12.0f);
-    voice.osc.amplitude = (velocity / 127.0f) * 0.5f;
-    voice.osc.period = sampleRate / freq;
-    voice.osc.reset();
+    // activate the first osc
+    voice.osc1.period = sampleRate / freq;
+    voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
+    voice.osc1.reset();
+    // activate the second osc
+    voice.osc2.period = voice.osc1.period;
+    voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
+    voice.osc2.reset();
 
     // Envelope
     Envelope& env = voice.env;
