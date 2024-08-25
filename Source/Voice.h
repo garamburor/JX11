@@ -22,6 +22,8 @@ struct Voice
     float saw;
     float period;
 
+    float panLeft, panRight;
+
     void reset()
     {
         note = 0;
@@ -29,6 +31,9 @@ struct Voice
         osc2.reset();
         saw = 0.0f;
         env.reset();
+
+        panLeft = 0.707f; // - 3dB
+        panRight = 0.707f;
     }
 
     void release()
@@ -52,5 +57,17 @@ struct Voice
 
         // apply envelope
         return output * envelope;
+    }
+
+    void updatePanning()
+    {
+        // Determine panning based on pitch. lower -> left, high -> right
+        float panning = std::clamp((note - 60.0f) /
+            24.0f, -1.0f, 1.0f);
+        // Constant power panning
+        panLeft = std::sin(PI_OVER_4 * (1.0f -
+            panning));
+        panRight = std::sin(PI_OVER_4 * (1.0f +
+            panning));
     }
 };

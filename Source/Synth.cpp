@@ -48,16 +48,25 @@ void Synth::render(float** outputBuffers, int sampleCount)
         float noise = noiseGen.nextValue() * noiseMix;
 
         // Reset output
-        float output = 0.0f;
+        float outputLeft = 0.0f;
+        float outputRight = 0.0f;
+
         if (voice.env.isActive()) {
             // Store noise value if loud enough
-            output = voice.render(noise);
+            float output = voice.render(noise);
+            // Apply gain for each channel
+            outputLeft += output * voice.panLeft;
+            outputRight += output * voice.panRight;
         }
-
         // Set output in audio buffer
-        outputBufferLeft[sample] = output;
+        // If buffer is stereo, send stereo signal
         if (outputBufferRight != nullptr) {
-            outputBufferRight[sample] = output;
+            outputBufferLeft[sample] = outputLeft;
+            outputBufferRight[sample] = outputRight;
+        } // Otherwise send mono
+        else {
+            outputBufferLeft[sample] = (outputLeft +
+                outputRight) * 0.5f;
         }
     }
 
@@ -118,6 +127,7 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
 void Synth::noteOn(int note, int velocity)
 {
     voice.note = note;
+    voice.updatePanning();
     // convert note to freq (temperament tuning)
     voice.period = calcPeriod(note);
     // activate the first osc
