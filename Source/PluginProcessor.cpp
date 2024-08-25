@@ -610,7 +610,7 @@ void JX11AudioProcessor::update()
         * std::exp(5.5f - 0.075f *
             envDecayParam->get()));
 
-    synth.envSustain = envSustainParam->get() / 100.0f;
+    synth.envSustain = envSustainParam->get() * 1e-2f;
 
     float envRelease = envReleaseParam->get();
     if (envRelease < 1.0f) {
@@ -622,9 +622,12 @@ void JX11AudioProcessor::update()
     }
 
     // Noise paramChange
-    float noiseMix = noiseParam->get() / 100.0f;
+    float noiseMix = noiseParam->get() * 1e-2f;
     noiseMix *= noiseMix;
     synth.noiseMix = noiseMix * 0.06f;
+
+    // Osc Mix
+    synth.oscMix = oscMixParam->get() * 1e-2f;
 }
 //==============================================================================
 // This creates new instances of the plugin..
