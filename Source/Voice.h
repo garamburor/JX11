@@ -20,6 +20,7 @@ struct Voice
 
     int note;
     float saw;
+    float period;
 
     void reset()
     {

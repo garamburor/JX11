@@ -628,6 +628,11 @@ void JX11AudioProcessor::update()
 
     // Osc Mix
     synth.oscMix = oscMixParam->get() * 1e-2f;
+
+    // Detune between oscs
+    float semi = oscTuneParam->get();
+    float cent = oscFineParam->get();
+    synth.detune = std::pow(1.059463094359f, -semi - 0.01f * cent);
 }
 //==============================================================================
 // This creates new instances of the plugin..
