@@ -14,7 +14,8 @@
 
 struct Voice
 {
-    Oscillator osc;
+    Oscillator osc1;
+    Oscillator osc2;
     Envelope env;
 
     int note;
@@ -23,7 +24,8 @@ struct Voice
     void reset()
     {
         note = 0;
-        osc.reset();
+        osc1.reset();
+        osc2.reset();
         saw = 0.0f;
         env.reset();
     }
@@ -35,14 +37,19 @@ struct Voice
 
     float render(float input)
     {
-        float sample = osc.nextSample();
-        saw = saw * 0.997f + sample; // apply one-pole LP filter
+        // advance oscillators
+        float sample1 = osc1.nextSample();
+        float sample2 = osc2.nextSample();
+
+        saw = saw * 0.997f + sample1 - sample2; // apply one-pole LP filter
 
         // sum input
         float output = saw + input;
 
+        // advance envelope
         float envelope = env.nextValue();
 
+        // apply envelope
         return output * envelope;
     }
 };
