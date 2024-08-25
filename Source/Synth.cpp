@@ -37,6 +37,10 @@ void Synth::render(float** outputBuffers, int sampleCount)
     float* outputBufferLeft = outputBuffers[0];
     float* outputBufferRight = outputBuffers[1];
     
+    // set osc pitch
+    voice.osc1.period = voice.period;
+    voice.osc2.period = voice.osc1.period * detune;
+
     for (int sample = 0; sample < sampleCount; ++sample)
     {
         // Get noise level for current sample
@@ -93,13 +97,12 @@ void Synth::noteOn(int note, int velocity)
     // convert note to freq (temperament tuning)
     float freq = 440.0f * std::exp2(float(note - 69) / 12.0f);
     // activate the first osc
-    voice.osc1.period = sampleRate / freq;
+    voice.period = sampleRate / freq;
     voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
-    voice.osc1.reset();
+    // voice.osc1.reset(); // reset restarts the phase, so it can sync oscs
     // activate the second osc
-    voice.osc2.period = voice.osc1.period;
     voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
-    voice.osc2.reset();
+    // voice.osc2.reset(); 
 
     // Envelope
     Envelope& env = voice.env;
