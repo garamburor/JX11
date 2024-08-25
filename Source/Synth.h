@@ -28,8 +28,10 @@ public:
     // Voice elements
     float noiseMix;
     float oscMix;
-
     float detune;
+
+    // Global tuning
+    float tune;
 
     // Envelope elements
     float envAttack;

@@ -632,7 +632,12 @@ void JX11AudioProcessor::update()
     // Detune between oscs
     float semi = oscTuneParam->get();
     float cent = oscFineParam->get();
-    synth.detune = std::pow(1.059463094359f, -semi - 0.01f * cent);
+    synth.detune = std::pow(1.059463094359f, -semi - 0.01f * cent); // 2^(-semi - ...)/12
+
+    // Global tuning
+    float octave = octaveParam->get();
+    float tuning = tuningParam->get();
+    synth.tune = octave * 12.0f + tuning * 1e-2f;
 }
 //==============================================================================
 // This creates new instances of the plugin..
