@@ -30,6 +30,7 @@ void Synth::reset()
 {
     voice.reset();
     noiseGen.reset();
+    pitchBend = 1.0f; // set to center pos
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -38,7 +39,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
     float* outputBufferRight = outputBuffers[1];
     
     // set osc pitch
-    voice.osc1.period = voice.period;
+    voice.osc1.period = voice.period * pitchBend;
     voice.osc2.period = voice.osc1.period * detune;
 
     for (int sample = 0; sample < sampleCount; ++sample)
@@ -91,8 +92,8 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
         noteOff(data1 & 0x7F);
         break;
 
-    // Note on
-    case 0x90:
+    // Note on (brackets needed or error)
+    case 0x90: {
         uint8_t note = data1 & 0x7F;
         uint8_t velo = data2 & 0x7F;
         if (velo > 0) {
@@ -101,6 +102,15 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
         else {
             noteOff(note);
         }
+        break;
+    }
+
+    // Pitch bend
+    case 0xE0:
+        // float(data1&2intoNumber)
+        // numer corresponds to 2^(-2*(number/8192)/12
+        pitchBend = std::exp(-0.000014102f * float(data1 +
+            128 * data2 - 8192));
         break;
     }
 }

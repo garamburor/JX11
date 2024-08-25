@@ -50,4 +50,6 @@ private:
     float sampleRate;
     Voice voice;
     NoiseGenerator noiseGen;
+
+    float pitchBend;
 };
