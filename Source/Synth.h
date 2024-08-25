@@ -44,6 +44,9 @@ private:
     void noteOn(int note, int velocity);
     void noteOff(int note);
 
+    // Optimized period calculation
+    float calcPeriod(int note) const;
+
     float sampleRate;
     Voice voice;
     NoiseGenerator noiseGen;
