@@ -637,7 +637,11 @@ void JX11AudioProcessor::update()
     // Global tuning
     float octave = octaveParam->get();
     float tuning = tuningParam->get();
-    synth.tune = octave * 12.0f + tuning * 1e-2f;
+    // Optimized freq calc
+    float tuneInSemi = -36.3763f - 12.0f * octave - tuning * 1e-2f;
+    // synth.tune = octave * 12.0f + tuning * 1e-2f;
+    synth.tune = sampleRate * std::exp(0.05776226505f *
+        tuneInSemi);
 }
 //==============================================================================
 // This creates new instances of the plugin..

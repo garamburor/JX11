@@ -69,6 +69,20 @@ void Synth::render(float** outputBuffers, int sampleCount)
     protectYourEars(outputBufferRight, sampleCount);
 }
 
+float Synth::calcPeriod(int note) const
+{
+    // Optimized formula for (sampleRate / freq):
+    // sampleRate / (440.0f * std::exp2((float(note - 69) + tune) / 12.0f));
+    float period = tune * std::exp(-0.05776226505f *
+        float(note));
+
+    // Set limit for highest pitch to avoid BLIT crapping out
+    while (period < 6.0f || (period * detune) < 6.0f) {
+        period += period;
+    }
+    return period;
+}
+
 void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
 {
     switch (data0 & 0xF0) {
@@ -95,8 +109,7 @@ void Synth::noteOn(int note, int velocity)
 {
     voice.note = note;
     // convert note to freq (temperament tuning)
-    float freq = 440.0f * std::exp2( (float(note - 69) + tune) / 12.0f);
-    voice.period = sampleRate / freq;
+    voice.period = calcPeriod(note);
     // activate the first osc
     voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
     // voice.osc1.reset(); // reset restarts the phase, so it can sync oscs
