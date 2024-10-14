@@ -39,8 +39,12 @@ public:
     float envSustain;
     float envRelease;
 
+    // Polyphony
+    static constexpr int MAX_VOICES = 8;
+    int numVoices;
 
 private:
+    void startVoice(int v, int note, int velocity);
     void noteOn(int note, int velocity);
     void noteOff(int note);
 
@@ -48,7 +52,7 @@ private:
     float calcPeriod(int note) const;
 
     float sampleRate;
-    Voice voice;
+    std::array<Voice, MAX_VOICES> voices;
     NoiseGenerator noiseGen;
 
     float pitchBend;

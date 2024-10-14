@@ -642,6 +642,9 @@ void JX11AudioProcessor::update()
     // synth.tune = octave * 12.0f + tuning * 1e-2f;
     synth.tune = sampleRate * std::exp(0.05776226505f *
         tuneInSemi);
+    // Polyphony
+    synth.numVoices = (polyModeParam->getIndex() == 0) ? 1 : Synth::MAX_VOICES;
+
 }
 //==============================================================================
 // This creates new instances of the plugin..

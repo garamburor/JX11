@@ -28,7 +28,9 @@ void Synth::deallocateResources()
 
 void Synth::reset()
 {
-    voice.reset();
+    for (int v = 0; v < MAX_VOICES; ++v) {
+        voices[v].reset();
+    }
     noiseGen.reset();
     pitchBend = 1.0f; // set to center pos
 }
@@ -39,8 +41,13 @@ void Synth::render(float** outputBuffers, int sampleCount)
     float* outputBufferRight = outputBuffers[1];
     
     // set osc pitch
-    voice.osc1.period = voice.period * pitchBend;
-    voice.osc2.period = voice.osc1.period * detune;
+    for (int v = 0; v < MAX_VOICES; ++v) {
+        Voice& voice = voices[v];
+        if (voice.env.isActive()) {
+            voice.osc1.period = voice.period * pitchBend;
+            voice.osc2.period = voice.osc1.period * detune;
+        }
+    }
 
     for (int sample = 0; sample < sampleCount; ++sample)
     {
@@ -51,13 +58,17 @@ void Synth::render(float** outputBuffers, int sampleCount)
         float outputLeft = 0.0f;
         float outputRight = 0.0f;
 
-        if (voice.env.isActive()) {
-            // Store noise value if loud enough
-            float output = voice.render(noise);
-            // Apply gain for each channel
-            outputLeft += output * voice.panLeft;
-            outputRight += output * voice.panRight;
+        for (int v = 0; v < MAX_VOICES; ++v) {
+            Voice& voice = voices[v];
+            if (voice.env.isActive()) {
+                // Store noise value if loud enough
+                float output = voice.render(noise);
+                // Apply gain for each channel
+                outputLeft += output * voice.panLeft;
+                outputRight += output * voice.panRight;
+            }
         }
+
         // Set output in audio buffer
         // If buffer is stereo, send stereo signal
         if (outputBufferRight != nullptr) {
@@ -71,8 +82,11 @@ void Synth::render(float** outputBuffers, int sampleCount)
     }
 
     // If voice is silent, reset it's envelope
-    if (!voice.env.isActive()) {
-        voice.env.reset();
+    for (int v = 0; v < MAX_VOICES; ++v) {
+        Voice& voice = voices[v];
+        if (!voice.env.isActive()) {
+            voice.env.reset();
+        }
     }
 
     protectYourEars(outputBufferLeft, sampleCount);
@@ -124,12 +138,15 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
     }
 }
 
-void Synth::noteOn(int note, int velocity)
+void Synth::startVoice(int v, int note, int velocity)
 {
+    // convert note to freq (temperament tuning)
+    float period = calcPeriod(note);
+
+    Voice& voice = voices[v];
+    voice.period = period;
     voice.note = note;
     voice.updatePanning();
-    // convert note to freq (temperament tuning)
-    voice.period = calcPeriod(note);
     // activate the first osc
     voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
     // voice.osc1.reset(); // reset restarts the phase, so it can sync oscs
@@ -146,8 +163,14 @@ void Synth::noteOn(int note, int velocity)
     env.attack();
 }
 
+void Synth::noteOn(int note, int velocity)
+{
+    startVoice(0, note, velocity);
+}
+
 void Synth::noteOff(int note)
 {
+    Voice& voice = voices[0];
     if (voice.note == note) {
         voice.release();
     }
