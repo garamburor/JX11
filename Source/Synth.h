@@ -48,6 +48,9 @@ private:
     void noteOn(int note, int velocity);
     void noteOff(int note);
 
+    // Polyphony voice mgmt
+    int findFreeVoice() const;
+
     // Optimized period calculation
     float calcPeriod(int note) const;
 

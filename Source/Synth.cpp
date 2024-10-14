@@ -93,6 +93,24 @@ void Synth::render(float** outputBuffers, int sampleCount)
     protectYourEars(outputBufferRight, sampleCount);
 }
 
+int Synth::findFreeVoice() const
+{
+    int v = 0;
+    float l = 100.0f;
+    // Iterate through all voices
+    for (int i = 0; i < MAX_VOICES; ++i) {
+        // Compare voice level of voices that are not in attack phase
+        if (voices[i].env.level < l && !voices[i].env.isInAttack()) {
+            // Store level of voice
+            l = voices[i].env.level;
+            // & voice number
+            v = i;
+        }
+    }
+    // Return the voice number
+    return v;
+}
+
 float Synth::calcPeriod(int note) const
 {
     // Optimized formula for (sampleRate / freq):
@@ -165,13 +183,20 @@ void Synth::startVoice(int v, int note, int velocity)
 
 void Synth::noteOn(int note, int velocity)
 {
-    startVoice(0, note, velocity);
+    int v = 0;
+    // Use voice mgmt is polyphony is on
+    if (numVoices > 1) {
+        v = findFreeVoice();
+    }
+    startVoice(v, note, velocity);
 }
 
 void Synth::noteOff(int note)
 {
-    Voice& voice = voices[0];
-    if (voice.note == note) {
-        voice.release();
+    for (int v = 0; v < MAX_VOICES; ++v) {
+        if (voices[v].note == note) {
+            voices[v].release();
+            voices[v].note = 0;
+        }
     }
 }
