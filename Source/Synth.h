@@ -52,7 +52,7 @@ private:
     int findFreeVoice() const;
 
     // Optimized period calculation
-    float calcPeriod(int note) const;
+    float calcPeriod(int v, int note) const;
 
     float sampleRate;
     std::array<Voice, MAX_VOICES> voices;
