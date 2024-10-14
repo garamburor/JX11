@@ -11,6 +11,9 @@
 #include "Synth.h"
 #include "Utils.h"
 
+// Detuning factor between voices
+static const float ANALOG = 0.002f;
+
 Synth::Synth()
 {
     sampleRate = 44100.0f;
@@ -111,12 +114,12 @@ int Synth::findFreeVoice() const
     return v;
 }
 
-float Synth::calcPeriod(int note) const
+float Synth::calcPeriod(int v, int note) const
 {
     // Optimized formula for (sampleRate / freq):
     // sampleRate / (440.0f * std::exp2((float(note - 69) + tune) / 12.0f));
     float period = tune * std::exp(-0.05776226505f *
-        float(note));
+        float(note) + ANALOG * float(v));
 
     // Set limit for highest pitch to avoid BLIT crapping out
     while (period < 6.0f || (period * detune) < 6.0f) {
@@ -159,7 +162,7 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
 void Synth::startVoice(int v, int note, int velocity)
 {
     // convert note to freq (temperament tuning)
-    float period = calcPeriod(note);
+    float period = calcPeriod(v, note);
 
     Voice& voice = voices[v];
     voice.period = period;
