@@ -43,6 +43,9 @@ public:
     static constexpr int MAX_VOICES = 8;
     int numVoices;
 
+    // Gain adjustment
+    float volumeTrim;
+
 private:
     void startVoice(int v, int note, int velocity);
     void noteOn(int note, int velocity);

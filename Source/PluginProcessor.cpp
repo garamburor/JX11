@@ -629,6 +629,9 @@ void JX11AudioProcessor::update()
     // Osc Mix
     synth.oscMix = oscMixParam->get() * 1e-2f;
 
+    // Adjust voice gain based on mix levels
+    synth.volumeTrim = 0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * 1.5f;
+
     // Detune between oscs
     float semi = oscTuneParam->get();
     float cent = oscFineParam->get();
