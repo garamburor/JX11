@@ -47,6 +47,7 @@ private:
     void startVoice(int v, int note, int velocity);
     void noteOn(int note, int velocity);
     void noteOff(int note);
+    void controlChange(uint8_t data1, uint8_t data2);
 
     // Polyphony voice mgmt
     int findFreeVoice() const;
@@ -59,4 +60,6 @@ private:
     NoiseGenerator noiseGen;
 
     float pitchBend;
+
+    bool sustainPedalPressed;
 };
