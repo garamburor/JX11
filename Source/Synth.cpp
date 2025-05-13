@@ -176,7 +176,7 @@ void Synth::startVoice(int v, int note, int velocity)
     voice.note = note;
     voice.updatePanning();
     // activate the first osc
-    voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
+    voice.osc1.amplitude = volumeTrim * velocity; //  (velocity / 127.0f) * 0.5f;
     // voice.osc1.reset(); // reset restarts the phase, so it can sync oscs
     // activate the second osc
     voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
