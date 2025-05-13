@@ -240,6 +240,10 @@ void JX11AudioProcessor::releaseResources()
 void JX11AudioProcessor::reset()
 {
     synth.reset();
+    // Set initial value for smoothed slider
+    synth.outputLevelSmoother.setCurrentAndTargetValue(
+        juce::Decibels::decibelsToGain(outputLevelParam->get())
+    );
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -636,6 +640,10 @@ void JX11AudioProcessor::update()
     float semi = oscTuneParam->get();
     float cent = oscFineParam->get();
     synth.detune = std::pow(1.059463094359f, -semi - 0.01f * cent); // 2^(-semi - ...)/12
+
+    // Output Level
+    synth.outputLevelSmoother.setTargetValue(
+        juce::Decibels::decibelsToGain(outputLevelParam->get()));
 
     // Global tuning
     float octave = octaveParam->get();

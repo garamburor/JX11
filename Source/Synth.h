@@ -46,6 +46,9 @@ public:
     // Gain adjustment
     float volumeTrim;
 
+    // Output Level Slider
+    juce::LinearSmoothedValue<float> outputLevelSmoother;
+
 private:
     void startVoice(int v, int note, int velocity);
     void noteOn(int note, int velocity);

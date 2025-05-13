@@ -39,6 +39,8 @@ void Synth::reset()
     pitchBend = 1.0f; // set to center pos
     // Set inital value of sustain pedal
     sustainPedalPressed = false;
+    // Set sample rate and time constant for one pole
+    outputLevelSmoother.reset(sampleRate, 0.05);
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -74,6 +76,11 @@ void Synth::render(float** outputBuffers, int sampleCount)
                 outputRight += output * voice.panRight;
             }
         }
+
+        // Apply output level
+        float outputLevel = outputLevelSmoother.getNextValue();
+        outputLeft *= outputLevel;
+        outputRight *= outputLevel;
 
         // Set output in audio buffer
         // If buffer is stereo, send stereo signal
