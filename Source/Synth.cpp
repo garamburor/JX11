@@ -13,6 +13,7 @@
 
 // Detuning factor between voices
 static const float ANALOG = 0.002f;
+static const int SUSTAIN = -1;
 
 Synth::Synth()
 {
@@ -36,6 +37,8 @@ void Synth::reset()
     }
     noiseGen.reset();
     pitchBend = 1.0f; // set to center pos
+    // Set inital value of sustain pedal
+    sustainPedalPressed = false;
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -132,30 +135,34 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
 {
     switch (data0 & 0xF0) {
         // Note off
-    case 0x80:
-        noteOff(data1 & 0x7F);
-        break;
+        case 0x80:
+            noteOff(data1 & 0x7F);
+            break;
 
-    // Note on (brackets needed or error)
-    case 0x90: {
-        uint8_t note = data1 & 0x7F;
-        uint8_t velo = data2 & 0x7F;
-        if (velo > 0) {
-            noteOn(note, velo);
+        // Note on (brackets needed or error)
+        case 0x90: {
+            uint8_t note = data1 & 0x7F;
+            uint8_t velo = data2 & 0x7F;
+            if (velo > 0) {
+                noteOn(note, velo);
+            }
+            else {
+                noteOff(note);
+            }
+            break;
         }
-        else {
-            noteOff(note);
-        }
-        break;
-    }
 
-    // Pitch bend
-    case 0xE0:
-        // float(data1&2intoNumber)
-        // numer corresponds to 2^(-2*(number/8192)/12
-        pitchBend = std::exp(-0.000014102f * float(data1 +
-            128 * data2 - 8192));
-        break;
+        // Pitch bend
+        case 0xE0:
+            // float(data1&2intoNumber)
+            // numer corresponds to 2^(-2*(number/8192)/12
+            pitchBend = std::exp(-0.000014102f * float(data1 +
+                128 * data2 - 8192));
+            break;
+        // Control change
+        case 0xB0:
+            controlChange(data1, data2);
+            break;
     }
 }
 
@@ -198,8 +205,35 @@ void Synth::noteOff(int note)
 {
     for (int v = 0; v < MAX_VOICES; ++v) {
         if (voices[v].note == note) {
-            voices[v].release();
-            voices[v].note = 0;
+            if (sustainPedalPressed) {
+                voices[v].note = SUSTAIN;
+            } else {
+                voices[v].release();
+                voices[v].note = 0;
+            }
         }
+    }
+}
+
+void Synth::controlChange(uint8_t data1, uint8_t data2)
+{
+    switch (data1) {
+        // Sustain pedal
+        case 0x40:
+            sustainPedalPressed = (data2 >= 64);
+            // If off, mute sustained voices
+            if (!sustainPedalPressed) {
+                noteOff(SUSTAIN);
+            }
+            break;
+        // Unaccounted messages reset synth voices.
+        default:
+            if (data1 >= 0x78) {
+                for (int v = 0; v < MAX_VOICES; ++v) {
+                    voices[v].reset();
+                }
+                sustainPedalPressed = false;
+            }
+            break;
     }
 }
