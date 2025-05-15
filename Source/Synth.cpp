@@ -198,11 +198,58 @@ void Synth::startVoice(int v, int note, int velocity)
     env.attack();
 }
 
+void Synth::restartMonoVoice(int note, int velocity)
+{
+    // Calculate period
+    float period = calcPeriod(0, note);
+    // Assign values to voice 0
+    Voice& voice = voices[0];
+    voice.period = period;
+    // Set level above threshold so it's not muted
+    voice.env.level += SILENCE + SILENCE;
+    voice.note = note;
+    voice.updatePanning();
+}
+
+void Synth::shiftQueuedNotes()
+{
+    for (int tmp = MAX_VOICES - 1; tmp > 0; tmp--) {
+        // Trigger release of voice
+        voices[tmp].release();
+        voices[tmp].note = voices[tmp - 1].note;
+    }
+}
+
+int Synth::nextQueuedNote()
+{
+    int held = 0;
+    for (int v = MAX_VOICES - 1; v > 0; v--) {
+        if (voices[v].note > 0) { held = v; }
+    }
+
+    if (held > 0) {
+        int note = voices[held].note;
+        voices[held].note = 0;
+        return note;
+    }
+
+    return 0;
+}
+
 void Synth::noteOn(int note, int velocity)
 {
     int v = 0;
-    // Use voice mgmt is polyphony is on
-    if (numVoices > 1) {
+    // If monophonic
+    if (numVoices == 1) {
+        if (voices[0].note > 0) {
+            // Shift voices
+            shiftQueuedNotes();
+            // Retrigger voice 0
+            restartMonoVoice(note, velocity); // Legato
+            return;
+        }
+    }
+    else { // Polyphonic
         v = findFreeVoice();
     }
     startVoice(v, note, velocity);
@@ -210,7 +257,14 @@ void Synth::noteOn(int note, int velocity)
 
 void Synth::noteOff(int note)
 {
-    for (int v = 0; v < MAX_VOICES; ++v) {
+    if ((numVoices == 1) && (voices[0].note == note)) {
+        int queuedNote = nextQueuedNote();
+        if (queuedNote > 0) {
+            restartMonoVoice(queuedNote, -1);
+        }
+    }
+
+    for (int v = 0; v < MAX_VOICES; v++) {
         if (voices[v].note == note) {
             if (sustainPedalPressed) {
                 voices[v].note = SUSTAIN;
