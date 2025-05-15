@@ -45,6 +45,8 @@ public:
 
     // Gain adjustment
     float volumeTrim;
+    float velocitySensitivity;
+    bool ignoreVelocity;
 
     // Output Level Slider
     juce::LinearSmoothedValue<float> outputLevelSmoother;
