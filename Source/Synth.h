@@ -51,6 +51,9 @@ public:
 
 private:
     void startVoice(int v, int note, int velocity);
+    void restartMonoVoice(int note, int velocity);
+    void shiftQueuedNotes();
+    int nextQueuedNote();
     void noteOn(int note, int velocity);
     void noteOff(int note);
     void controlChange(uint8_t data1, uint8_t data2);
