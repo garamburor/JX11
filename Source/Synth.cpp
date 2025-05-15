@@ -182,8 +182,10 @@ void Synth::startVoice(int v, int note, int velocity)
     voice.period = period;
     voice.note = note;
     voice.updatePanning();
+    // Velocity curve
+    float vel = 0.004f * float((velocity + 64) * (velocity + 64)) - 8.0f;
     // activate the first osc
-    voice.osc1.amplitude = volumeTrim * velocity; //  (velocity / 127.0f) * 0.5f;
+    voice.osc1.amplitude = volumeTrim * vel; //  (velocity / 127.0f) * 0.5f;
     // voice.osc1.reset(); // reset restarts the phase, so it can sync oscs
     // activate the second osc
     voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
@@ -238,6 +240,8 @@ int Synth::nextQueuedNote()
 
 void Synth::noteOn(int note, int velocity)
 {
+    if (ignoreVelocity) { velocity = 80; }
+
     int v = 0;
     // If monophonic
     if (numVoices == 1) {

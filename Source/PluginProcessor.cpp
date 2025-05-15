@@ -641,6 +641,17 @@ void JX11AudioProcessor::update()
     float cent = oscFineParam->get();
     synth.detune = std::pow(1.059463094359f, -semi - 0.01f * cent); // 2^(-semi - ...)/12
 
+    // Velocity
+    float filterVelocity = filterVelocityParam->get();
+    if (filterVelocity < -90.0f) {
+        synth.velocitySensitivity = 0.0f;
+        synth.ignoreVelocity = true;
+    }
+    else {
+        synth.velocitySensitivity = 0.0005f * filterVelocity;
+        synth.ignoreVelocity = false;
+    }
+
     // Output Level
     synth.outputLevelSmoother.setTargetValue(
         juce::Decibels::decibelsToGain(outputLevelParam->get()));
@@ -648,11 +659,14 @@ void JX11AudioProcessor::update()
     // Global tuning
     float octave = octaveParam->get();
     float tuning = tuningParam->get();
+
     // Optimized freq calc
     float tuneInSemi = -36.3763f - 12.0f * octave - tuning * 1e-2f;
+
     // synth.tune = octave * 12.0f + tuning * 1e-2f;
     synth.tune = sampleRate * std::exp(0.05776226505f *
         tuneInSemi);
+
     // Polyphony
     synth.numVoices = (polyModeParam->getIndex() == 0) ? 1 : Synth::MAX_VOICES;
 
