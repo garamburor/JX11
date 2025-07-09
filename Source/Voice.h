@@ -24,6 +24,10 @@ struct Voice
 
     float panLeft, panRight;
 
+    // glide
+    float target;
+    float glideRate;
+
     void reset()
     {
         note = 0;
@@ -69,5 +73,11 @@ struct Voice
             panning));
         panRight = std::sin(PI_OVER_4 * (1.0f +
             panning));
+    }
+
+    void updateLFO()
+    {
+        // one pole to reach pitch target
+        period += glideRate * (target - period);
     }
 };

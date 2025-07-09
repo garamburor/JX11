@@ -46,6 +46,8 @@ void Synth::reset()
     lfoStep = 0;
     // Reset modwheel
     modWheel = 0.0f;
+    // Glide
+    lastNote = 0;
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -58,8 +60,8 @@ void Synth::render(float** outputBuffers, int sampleCount)
         // Render voices
         Voice& voice = voices[v];
         if (voice.env.isActive()) {
-            voice.osc1.period = voice.period * pitchBend;
-            voice.osc2.period = voice.osc1.period * detune;
+            updatePeriod(voice);
+            voice.glideRate = glideRate;
         }
     }
 
@@ -188,9 +190,25 @@ void Synth::startVoice(int v, int note, int velocity)
     float period = calcPeriod(v, note);
 
     Voice& voice = voices[v];
-    voice.period = period;
+    voice.target = period; // Set desired period
+
+    int noteDistance = 0;
+    // Calc distance only if there's a previous note played
+    if (lastNote > 0) {
+        if ((glideMode == 2) || ((glideMode == 1) && isPlayingLegatoStyle())) {
+            noteDistance = note - lastNote;
+        }
+    }
+    // set period to glide from
+    voice.period = period * std::pow(1.059463094359f, float(noteDistance) - glideBend);
+    // Limit voice period value
+    if (voice.period < 6.0f) { voice.period = 6.0f;  }
+
+    // Update last note and current note
+    lastNote = note;
     voice.note = note;
     voice.updatePanning();
+
     // Velocity curve
     float vel = 0.004f * float((velocity + 64) * (velocity + 64)) - 8.0f;
     // activate the first osc
@@ -220,7 +238,9 @@ void Synth::restartMonoVoice(int note, int velocity)
     float period = calcPeriod(0, note);
     // Assign values to voice 0
     Voice& voice = voices[0];
-    voice.period = period;
+    voice.target = period; // if glide is set
+    // If no glide is set
+    if (glideMode == 0) { voice.period = period; }
     // Set level above threshold so it's not muted
     voice.env.level += SILENCE + SILENCE;
     voice.note = note;
@@ -342,7 +362,20 @@ void Synth::updateLFO()
             if (voice.env.isActive()) {
                 voice.osc1.modulation = vibratoMod;
                 voice.osc2.modulation = pwm;
+                // Glide
+                voice.updateLFO();
+                updatePeriod(voice);
             }
         }
     }
+}
+
+// Check voices that are still playing
+bool Synth::isPlayingLegatoStyle() const
+{
+    int held = 0;
+    for (int i = 0; i < MAX_VOICES; ++i) {
+        if (voices[i].note > 0) { held += 1; }
+    }
+    return held > 0;
 }
