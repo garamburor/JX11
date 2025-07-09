@@ -44,6 +44,8 @@ void Synth::reset()
     // Reset LFO
     lfo = 0.0f;
     lfoStep = 0;
+    // Reset modwheel
+    modWheel = 0.0f;
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -303,6 +305,10 @@ void Synth::controlChange(uint8_t data1, uint8_t data2)
                 noteOff(SUSTAIN);
             }
             break;
+        // Mod Wheel
+        case 0x01:
+            modWheel = 0.000005f * float(data2 * data2);
+            break;
         // Unaccounted messages reset synth voices.
         default:
             if (data1 >= 0x78) {
@@ -327,8 +333,8 @@ void Synth::updateLFO()
         const float sine = std::sin(lfo); // Get sine from phasor
 
         // Set modulation for pitch
-        float vibratoMod = 1.0f + sine * vibrato;
-        float pwm = 1.0f + sine * pwmDepth;
+        float vibratoMod = 1.0f + sine * (modWheel + vibrato);
+        float pwm = 1.0f + sine * (modWheel + pwmDepth);
 
         // add mod to each voice
         for (int v = 0; v < MAX_VOICES; ++v) {

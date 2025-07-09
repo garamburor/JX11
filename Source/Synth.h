@@ -87,4 +87,7 @@ private:
 
     int lfoStep;
     float lfo;
+
+    // Mod wheel
+    float modWheel;
 };
