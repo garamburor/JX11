@@ -41,6 +41,9 @@ void Synth::reset()
     sustainPedalPressed = false;
     // Set sample rate and time constant for one pole
     outputLevelSmoother.reset(sampleRate, 0.05);
+    // Reset LFO
+    lfo = 0.0f;
+    lfoStep = 0;
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -50,6 +53,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
     
     // set osc pitch
     for (int v = 0; v < MAX_VOICES; ++v) {
+        // Render voices
         Voice& voice = voices[v];
         if (voice.env.isActive()) {
             voice.osc1.period = voice.period * pitchBend;
@@ -59,6 +63,9 @@ void Synth::render(float** outputBuffers, int sampleCount)
 
     for (int sample = 0; sample < sampleCount; ++sample)
     {
+        // advance LFO phasor
+        updateLFO();
+
         // Get noise level for current sample
         float noise = noiseGen.nextValue() * noiseMix;
 
@@ -300,5 +307,30 @@ void Synth::controlChange(uint8_t data1, uint8_t data2)
                 sustainPedalPressed = false;
             }
             break;
+    }
+}
+
+void Synth::updateLFO()
+{
+    // Condition to run in lower sample rate
+    if (--lfoStep <= 0) {
+        lfoStep = LFO_MAX;
+
+        lfo += lfoInc; // Increment phasor
+        if (lfo > PI) { lfo -= TWO_PI; } // Reset phasor if out of bounds
+
+        const float sine = std::sin(lfo); // Get sine from phasor
+
+        // Set modulation for pitch
+        float vibratoMod = 1.0f + sine * vibrato;
+
+        // add mod to each voice
+        for (int v = 0; v < MAX_VOICES; ++v) {
+            Voice& voice = voices[v];
+            if (voice.env.isActive()) {
+                voice.osc1.modulation = vibratoMod;
+                voice.osc2.modulation = vibratoMod;
+            }
+        }
     }
 }

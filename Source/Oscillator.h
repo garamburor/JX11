@@ -20,6 +20,7 @@ class Oscillator
 public:
     float period = 0.0f;
     float amplitude;
+    float modulation = 0.5f;
 
     void reset()
     {
@@ -38,7 +39,7 @@ public:
         phase += inc; // 1
         if (phase <= PI_OVER_4) { // 2
             // 3
-            float halfPeriod = period * 0.5f;
+            float halfPeriod = period * 0.5f * modulation;
             phaseMax = std::floor(0.5f + halfPeriod) - 0.5f;
             dc = 0.5f * amplitude / phaseMax; // Approx DC by avg
             phaseMax *= PI;

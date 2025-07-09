@@ -51,6 +51,11 @@ public:
     // Output Level Slider
     juce::LinearSmoothedValue<float> outputLevelSmoother;
 
+    // Modulation
+    const int LFO_MAX = 32; // Downsampling factor
+    float lfoInc;
+    float vibrato;
+
 private:
     void startVoice(int v, int note, int velocity);
     void restartMonoVoice(int note, int velocity);
@@ -73,4 +78,10 @@ private:
     float pitchBend;
 
     bool sustainPedalPressed;
+
+    // Modulation
+    void updateLFO();
+
+    int lfoStep;
+    float lfo;
 };
