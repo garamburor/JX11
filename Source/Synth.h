@@ -56,6 +56,9 @@ public:
     float lfoInc;
     float vibrato;
 
+    // PWM
+    float pwmDepth;
+
 private:
     void startVoice(int v, int note, int velocity);
     void restartMonoVoice(int note, int velocity);

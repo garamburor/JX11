@@ -198,6 +198,11 @@ void Synth::startVoice(int v, int note, int velocity)
     voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
     // voice.osc2.reset(); 
 
+    // Modulation
+    if (vibrato == 0.0f && pwmDepth > 0.0f) {
+        voice.osc2.squareWave(voice.osc1, voice.period);
+    }
+
     // Envelope
     Envelope& env = voice.env;
     env.attackMultiplier = envAttack;
@@ -323,13 +328,14 @@ void Synth::updateLFO()
 
         // Set modulation for pitch
         float vibratoMod = 1.0f + sine * vibrato;
+        float pwm = 1.0f + sine * pwmDepth;
 
         // add mod to each voice
         for (int v = 0; v < MAX_VOICES; ++v) {
             Voice& voice = voices[v];
             if (voice.env.isActive()) {
                 voice.osc1.modulation = vibratoMod;
-                voice.osc2.modulation = vibratoMod;
+                voice.osc2.modulation = pwm;
             }
         }
     }

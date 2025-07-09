@@ -678,6 +678,10 @@ void JX11AudioProcessor::update()
     float vibrato = vibratoParam->get() / 200.0f;
     synth.vibrato = 0.2f * vibrato * vibrato;
 
+    // PWM Depth
+    synth.pwmDepth = synth.vibrato;
+    if (vibrato < 0.0f) { synth.vibrato = 0.0f; }
+
 
 }
 //==============================================================================

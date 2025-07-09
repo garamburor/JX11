@@ -74,6 +74,28 @@ public:
 
         return output - dc;
     }
+
+    void squareWave(Oscillator& other, float newPeriod)
+    {
+        reset(); // Reset oscillator
+        // Figure out phase and sign of other osc
+        if (other.inc > 0.0f) {
+            phase = other.phaseMax + other.phaseMax - other.phase;
+            inc = -other.inc;
+        }
+        else if (other.inc < 0.0f) {
+            phase = other.phase;
+            inc = other.inc;
+        } // If osc hasn't started
+        else {
+            phase = -PI;
+            inc = PI;
+        }
+        // Shift phase by half a period
+        phase += PI * newPeriod * 0.5f;
+        phaseMax = phase;
+    }
+
 private:
     float phase;
     float phaseMax;
