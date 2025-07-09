@@ -59,6 +59,11 @@ public:
     // PWM
     float pwmDepth;
 
+    // Glide
+    int glideMode;
+    float glideRate;
+    float glideBend;
+
 private:
     void startVoice(int v, int note, int velocity);
     void restartMonoVoice(int note, int velocity);
@@ -90,4 +95,14 @@ private:
 
     // Mod wheel
     float modWheel;
+
+    // Glide
+    int lastNote;
+    inline void updatePeriod(Voice& voice)
+    {
+        voice.osc1.period = voice.period * pitchBend;
+        voice.osc2.period = voice.osc1.period * detune;
+    }
+
+    bool isPlayingLegatoStyle() const;
 };
