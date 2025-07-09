@@ -332,6 +332,16 @@ void JX11AudioProcessor::handleMIDI(uint8_t data0, uint8_t data1, uint8_t data2)
         }
     }
 
+    // If command is control change
+    if ((data0 & 0xF0) == 0xB0) {
+        if (data1 == 0x07) {
+            float volumeCtl = float(data2) / 127.0f;
+            outputLevelParam->beginChangeGesture();
+            outputLevelParam->setValueNotifyingHost(volumeCtl);
+            outputLevelParam->endChangeGesture();
+        }
+    }
+
     // Other commands send to synth object
     synth.midiMessage(data0, data1, data2);
 }
