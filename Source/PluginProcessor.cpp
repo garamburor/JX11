@@ -670,6 +670,15 @@ void JX11AudioProcessor::update()
     // Polyphony
     synth.numVoices = (polyModeParam->getIndex() == 0) ? 1 : Synth::MAX_VOICES;
 
+    // Modulation
+    const float inverseUpdateRate = inverseSampleRate * synth.LFO_MAX;
+    // LFO Phasor
+    float lfoRate = std::exp(7.0f * lfoRateParam->get() - 4.0f);
+    synth.lfoInc = lfoRate * inverseUpdateRate * float(TWO_PI);
+    float vibrato = vibratoParam->get() / 200.0f;
+    synth.vibrato = 0.2f * vibrato * vibrato;
+
+
 }
 //==============================================================================
 // This creates new instances of the plugin..
