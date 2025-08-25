@@ -32,6 +32,7 @@ struct Voice
     Filter filter;
     float cutoff;
     float filterMod;
+    float filterQ;
 
     void reset()
     {
@@ -92,6 +93,6 @@ struct Voice
 
         float modulatedCutoff = cutoff * std::exp(filterMod);
         modulatedCutoff = std::clamp(modulatedCutoff, 30.0f, 20000.0f);
-        filter.updateCoefficients(modulatedCutoff, 0.707f);
+        filter.updateCoefficients(modulatedCutoff, filterQ);
     }
 };

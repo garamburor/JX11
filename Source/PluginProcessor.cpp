@@ -640,11 +640,16 @@ void JX11AudioProcessor::update()
     noiseMix *= noiseMix;
     synth.noiseMix = noiseMix * 0.06f;
 
+    // Filter
+    synth.filterKeyTracking = 0.08f * filterFreqParam->get() - 1.5f;
+    float filterReso = filterResoParam->get() / 100.0f;
+    synth.filterQ = std::exp(3.0f * filterReso);
+
     // Osc Mix
     synth.oscMix = oscMixParam->get() * 1e-2f;
 
     // Adjust voice gain based on mix levels
-    synth.volumeTrim = 0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * 1.5f;
+    synth.volumeTrim = 0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * (1.5f - 0.5f * filterReso);
 
     // Detune between oscs
     float semi = oscTuneParam->get();
@@ -706,9 +711,6 @@ void JX11AudioProcessor::update()
     }
 
     synth.glideBend = glideBendParam->get();
-
-    // Filter
-    synth.filterKeyTracking = 0.08f * filterFreqParam->get() - 1.5f;
 }
 //==============================================================================
 // This creates new instances of the plugin..

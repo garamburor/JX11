@@ -68,6 +68,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
         if (voice.env.isActive()) {
             updatePeriod(voice);
             voice.glideRate = glideRate;
+            voice.filterQ = filterQ;
         }
     }
 
@@ -225,7 +226,7 @@ void Synth::startVoice(int v, int note, int velocity)
     voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
     // voice.osc2.reset(); 
     voice.cutoff = sampleRate / (period * PI); //set filter's cutoff related to note
-
+    voice.cutoff = std::exp(velocitySensitivity * float(velocity - 64));
 
     // Modulation
     if (vibrato == 0.0f && pwmDepth > 0.0f) {
