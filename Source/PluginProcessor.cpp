@@ -338,7 +338,7 @@ void JX11AudioProcessor::handleMIDI(uint8_t data0, uint8_t data1, uint8_t data2)
             float volumeCtl = float(data2) / 127.0f;
             outputLevelParam->beginChangeGesture();
             outputLevelParam->setValueNotifyingHost(volumeCtl);
-            outputLevelParam->endChangeGesture();
+            outputLevelParam->endChangeGesture(); 
         }
     }
 
@@ -707,6 +707,8 @@ void JX11AudioProcessor::update()
 
     synth.glideBend = glideBendParam->get();
 
+    // Filter
+    synth.filterKeyTracking = 0.08f * filterFreqParam->get() - 1.5f;
 }
 //==============================================================================
 // This creates new instances of the plugin..

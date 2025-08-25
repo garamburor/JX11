@@ -23,6 +23,12 @@ Synth::Synth()
 void Synth::allocateResources(double sampleRate_, int /*samplesPerBlock*/)
 {
     sampleRate = static_cast<float>(sampleRate_);
+
+    // Set filter's samplerate
+    for (int v = 0; v < MAX_VOICES; ++v)
+    {
+        voices[v].filter.sampleRate = sampleRate;
+    }
 }
 
 void Synth::deallocateResources()
@@ -110,6 +116,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
         Voice& voice = voices[v];
         if (!voice.env.isActive()) {
             voice.env.reset();
+            voice.filter.reset();
         }
     }
 
@@ -217,6 +224,8 @@ void Synth::startVoice(int v, int note, int velocity)
     // activate the second osc
     voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
     // voice.osc2.reset(); 
+    voice.cutoff = sampleRate / (period * PI); //set filter's cutoff related to note
+
 
     // Modulation
     if (vibrato == 0.0f && pwmDepth > 0.0f) {
@@ -356,12 +365,15 @@ void Synth::updateLFO()
         float vibratoMod = 1.0f + sine * (modWheel + vibrato);
         float pwm = 1.0f + sine * (modWheel + pwmDepth);
 
+        float filterMod = filterKeyTracking;
+
         // add mod to each voice
         for (int v = 0; v < MAX_VOICES; ++v) {
             Voice& voice = voices[v];
             if (voice.env.isActive()) {
                 voice.osc1.modulation = vibratoMod;
                 voice.osc2.modulation = pwm;
+                voice.filterMod = filterMod;
                 // Glide
                 voice.updateLFO();
                 updatePeriod(voice);

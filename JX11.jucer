@@ -21,6 +21,7 @@
       <FILE id="qfUmhF" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="Dslrlr" name="Preset.h" compile="0" resource="0" file="Source/Preset.h"/>
+      <FILE id="O4ZrLp" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
       <FILE id="Dz9YLg" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
   </MAINGROUP>

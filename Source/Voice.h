@@ -11,6 +11,7 @@
 #pragma once
 #include "Oscillator.h"
 #include "Envelope.h"
+#include "Filter.h"
 
 struct Voice
 {
@@ -28,6 +29,10 @@ struct Voice
     float target;
     float glideRate;
 
+    Filter filter;
+    float cutoff;
+    float filterMod;
+
     void reset()
     {
         note = 0;
@@ -38,6 +43,8 @@ struct Voice
 
         panLeft = 0.707f; // - 3dB
         panRight = 0.707f;
+
+        filter.reset();
     }
 
     void release()
@@ -55,6 +62,9 @@ struct Voice
 
         // sum input
         float output = saw + input;
+
+        // apply filter
+        output = filter.render(output);
 
         // advance envelope
         float envelope = env.nextValue();
@@ -79,5 +89,9 @@ struct Voice
     {
         // one pole to reach pitch target
         period += glideRate * (target - period);
+
+        float modulatedCutoff = cutoff * std::exp(filterMod);
+        modulatedCutoff = std::clamp(modulatedCutoff, 30.0f, 20000.0f);
+        filter.updateCoefficients(modulatedCutoff, 0.707f);
     }
 };

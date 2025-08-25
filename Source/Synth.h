@@ -64,6 +64,9 @@ public:
     float glideRate;
     float glideBend;
 
+    // Filter
+    float filterKeyTracking;
+
 private:
     void startVoice(int v, int note, int velocity);
     void restartMonoVoice(int note, int velocity);
