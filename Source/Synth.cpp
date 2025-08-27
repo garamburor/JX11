@@ -54,6 +54,8 @@ void Synth::reset()
     modWheel = 0.0f;
     // Glide
     lastNote = 0;
+    // Filter
+    resonanceCtl = 1.0f;
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -68,7 +70,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
         if (voice.env.isActive()) {
             updatePeriod(voice);
             voice.glideRate = glideRate;
-            voice.filterQ = filterQ;
+            voice.filterQ = filterQ * resonanceCtl;
         }
     }
 
@@ -347,6 +349,10 @@ void Synth::controlChange(uint8_t data1, uint8_t data2)
                 }
                 sustainPedalPressed = false;
             }
+            break;
+        // Filter resonance
+        case 0x47:
+            resonanceCtl = 154.0f / float(154 - data2);
             break;
     }
 }

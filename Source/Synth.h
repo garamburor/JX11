@@ -109,4 +109,7 @@ private:
     }
 
     bool isPlayingLegatoStyle() const;
+
+    // Filter
+    float resonanceCtl;
 };
