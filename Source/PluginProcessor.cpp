@@ -645,6 +645,9 @@ void JX11AudioProcessor::update()
     float filterReso = filterResoParam->get() / 100.0f;
     synth.filterQ = std::exp(3.0f * filterReso);
 
+    float filterLFO = filterLFOParam->get() / 100.0f;
+    synth.filterLFODepth = 2.5f * filterLFO * filterLFO;
+
     // Osc Mix
     synth.oscMix = oscMixParam->get() * 1e-2f;
 

@@ -67,6 +67,7 @@ public:
     // Filter
     float filterKeyTracking;
     float filterQ;
+    float filterLFODepth;
 
 private:
     void startVoice(int v, int note, int velocity);

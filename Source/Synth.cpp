@@ -372,7 +372,7 @@ void Synth::updateLFO()
         float vibratoMod = 1.0f + sine * (modWheel + vibrato);
         float pwm = 1.0f + sine * (modWheel + pwmDepth);
 
-        float filterMod = filterKeyTracking;
+        float filterMod = filterKeyTracking + filterLFODepth * sine;
 
         // add mod to each voice
         for (int v = 0; v < MAX_VOICES; ++v) {
