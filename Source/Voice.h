@@ -34,6 +34,8 @@ struct Voice
     float filterMod;
     float filterQ;
 
+    float pitchBend;
+
     void reset()
     {
         note = 0;
@@ -91,7 +93,7 @@ struct Voice
         // one pole to reach pitch target
         period += glideRate * (target - period);
 
-        float modulatedCutoff = cutoff * std::exp(filterMod);
+        float modulatedCutoff = cutoff * std::exp(filterMod) / pitchBend;
         modulatedCutoff = std::clamp(modulatedCutoff, 30.0f, 20000.0f);
         filter.updateCoefficients(modulatedCutoff, filterQ);
     }
