@@ -113,4 +113,5 @@ private:
 
     // Filter
     float resonanceCtl;
+    float pressure;
 };
