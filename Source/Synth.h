@@ -69,6 +69,10 @@ public:
     float filterQ;
     float filterLFODepth;
 
+    // Filter Envelope
+    float filterAttack, filterDecay, filterSustain, filterRelease;
+    float filterEnvDepth;
+
 private:
     void startVoice(int v, int note, int velocity);
     void restartMonoVoice(int note, int velocity);

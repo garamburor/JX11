@@ -75,6 +75,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
             voice.glideRate = glideRate;
             voice.filterQ = filterQ * resonanceCtl;
             voice.pitchBend = pitchBend;
+            voice.filterEnvDepth = filterEnvDepth;
         }
     }
 
@@ -250,6 +251,14 @@ void Synth::startVoice(int v, int note, int velocity)
     env.sustainLevel = envSustain;
     env.releaseMultiplier = envRelease;
     env.attack();
+
+    // Filter Envelope
+    Envelope& filterEnv = voice.filterEnv;
+    filterEnv.attackMultiplier = filterAttack;
+    filterEnv.decayMultiplier = filterDecay;
+    filterEnv.sustainLevel = filterSustain;
+    filterEnv.releaseMultiplier = filterRelease;
+    filterEnv.attack();
 }
 
 void Synth::restartMonoVoice(int note, int velocity)
