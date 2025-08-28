@@ -58,6 +58,7 @@ void Synth::reset()
     resonanceCtl = 1.0f;
     pressure = 0.0f;
     filterCtl = 0.0f;
+    filterZip = 0.0f;
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -388,6 +389,8 @@ void Synth::updateLFO()
         float pwm = 1.0f + sine * (modWheel + pwmDepth);
 
         float filterMod = filterKeyTracking + filterCtl + (filterLFODepth + pressure) * sine;
+        // Smooth filter mod
+        filterZip += 0.005f * (filterMod - filterZip);
 
         // add mod to each voice
         for (int v = 0; v < MAX_VOICES; ++v) {
@@ -395,7 +398,7 @@ void Synth::updateLFO()
             if (voice.env.isActive()) {
                 voice.osc1.modulation = vibratoMod;
                 voice.osc2.modulation = pwm;
-                voice.filterMod = filterMod;
+                voice.filterMod = filterZip;
                 // Glide
                 voice.updateLFO();
                 updatePeriod(voice);

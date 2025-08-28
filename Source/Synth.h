@@ -115,4 +115,5 @@ private:
     float resonanceCtl;
     float pressure;
     float filterCtl;
+    float filterZip;
 };
